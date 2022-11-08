@@ -36,6 +36,12 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
           const result = await serviceCollection.findOne(query);
           res.send(result)
         })
+
+        app.post('/services', async (req, res) => {
+          const query = req.body;
+          const result = await serviceCollection.insertOne(query)
+          res.send(result)
+        })
         
       }
       finally {
