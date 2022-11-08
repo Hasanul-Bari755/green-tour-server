@@ -63,6 +63,20 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
           res.send(review)
 
         })
+
+        app.get('/reviews', async (req, res) => {
+          let query = {}
+          if (req.query.email) {
+            query = {
+              email: req.query.email
+            }
+          }
+          const cursor = reviewCollecttion.find(query);
+          const reviews = await cursor.toArray()
+          res.send(reviews)
+        })
+
+        
         
       }
       finally {
