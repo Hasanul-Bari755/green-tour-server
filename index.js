@@ -15,6 +15,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
   async  function run() {
       try {
         const serviceCollection = client.db('greenTure').collection('services');
+        const reviewCollecttion = client.db('greenTure').collection('review')
 
         app.get('/services', async (req, res) => {
           const query = {}
@@ -40,6 +41,13 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
         app.post('/services', async (req, res) => {
           const query = req.body;
           const result = await serviceCollection.insertOne(query)
+          res.send(result)
+        })
+
+        //review api
+        app.post('/review', async (req, res) => {
+          const query = req.body;
+          const result = await reviewCollecttion.insertOne(query)
           res.send(result)
         })
         
