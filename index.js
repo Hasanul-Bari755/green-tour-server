@@ -60,7 +60,8 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
           }
           const cursor = reviewCollecttion.find(query);
           const review = await cursor.toArray()
-          res.send(review)
+          const reviewsByTime = review.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+          res.send(reviewsByTime)
 
         })
 
