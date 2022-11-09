@@ -76,6 +76,38 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
           res.send(reviews)
         })
 
+        app.delete('/review/:id', async (req, res) => {
+          const id = req.params.id;
+          const query = { _id: ObjectId(id) };
+          const result = await reviewCollecttion.deleteOne(query);
+          res.send(result)
+        })
+
+        app.get('/reviewupdate/:id', async (req, res)=>{
+          const id = req.params.id;
+          const query = { _id: ObjectId(id) };
+          const result = await reviewCollecttion.findOne(query)
+          res.send(result)
+        })
+
+        app.patch('/updatereview/:id', async (req, res) => {
+          const id = req.params.id;
+          const review = req.body;
+          console.log(review)
+          console.log(review.userName,review.img,review.review)
+          const query = { _id: ObjectId(id) };
+          const option = {upsert: true}
+          const updatedReview = {
+            $set: {
+              userName: review.userName,
+              img: review.img,
+              review:review.review
+            }
+          }
+          const result = await reviewCollecttion.updateOne(query, updatedReview, option)
+          res.send(result)
+        })
+
         
         
       }
