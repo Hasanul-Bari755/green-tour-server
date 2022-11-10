@@ -51,10 +51,13 @@ const verifyJWT = (req, res, next) => {
         })
 
         app.get('/servicesall', async (req, res) => {
+          const pageNumber = parseInt(req.query.pageNumber);
+          const sizeOfData = parseInt(req.query.sizeOfData);
           const query = {}
           const cursor = serviceCollection.find(query);
-          const services = await cursor.toArray()
-          res.send(services)
+          const services = await cursor.skip(pageNumber*sizeOfData).limit(sizeOfData).toArray()
+          const count = await serviceCollection.estimatedDocumentCount();
+          res.send({ count,services })
         })
 
         app.get('/services/:id', async (req, res) => {
@@ -100,7 +103,8 @@ const verifyJWT = (req, res, next) => {
           }
           const cursor = reviewCollecttion.find(query);
           const reviews = await cursor.toArray()
-          res.send(reviews)
+          const reviewsByTime = reviews.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).reverse()
+          res.send(reviewsByTime)
         })
 
         app.delete('/review/:id', async (req, res) => {
