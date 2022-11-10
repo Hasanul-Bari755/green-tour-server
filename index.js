@@ -55,7 +55,7 @@ const verifyJWT = (req, res, next) => {
           const sizeOfData = parseInt(req.query.sizeOfData);
           const query = {}
           const cursor = serviceCollection.find(query);
-          const services = await cursor.skip(pageNumber*sizeOfData).limit(sizeOfData).toArray()
+          const services = await (await cursor.skip(pageNumber*sizeOfData).limit(sizeOfData).toArray()).reverse
           const count = await serviceCollection.estimatedDocumentCount();
           res.send({ count,services })
         })
