@@ -13,6 +13,8 @@ app.use(express.json());
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.wc7jl9l.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
+//verify jwt
+
 const verifyJWT = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) {
@@ -42,23 +44,25 @@ const verifyJWT = (req, res, next) => {
         });
         res.send({ token });
        });
-
+         //limit api 
         app.get('/services', async (req, res) => {
           const query = {}
           const cursor = serviceCollection.find(query);
           const services = await (await cursor.limit(3).toArray()).reverse()
           res.send(services)
         })
-
+        //All service api
         app.get('/servicesall', async (req, res) => {
           const pageNumber = parseInt(req.query.pageNumber);
           const sizeOfData = parseInt(req.query.sizeOfData);
           const query = {}
           const cursor = serviceCollection.find(query);
-          const services = await (await cursor.skip(pageNumber*sizeOfData).limit(sizeOfData).toArray()).reverse
+          const services = await (await cursor.skip(pageNumber*sizeOfData).limit(sizeOfData).toArray()).reverse()
           const count = await serviceCollection.estimatedDocumentCount();
           res.send({ count,services })
         })
+
+        //indevidual service api
 
         app.get('/services/:id', async (req, res) => {
           const id = req.params.id;
@@ -67,6 +71,7 @@ const verifyJWT = (req, res, next) => {
           res.send(result)
         })
 
+        //add service api
         app.post('/services', async (req, res) => {
           const query = req.body;
           const result = await serviceCollection.insertOne(query)
@@ -80,6 +85,8 @@ const verifyJWT = (req, res, next) => {
           res.send(result)
         })
 
+        //get specific sercvice review api 
+        
         app.get('/review', async(req, res) => {
           let query = {}
           if (req.query.serviceId) {
@@ -94,6 +101,7 @@ const verifyJWT = (req, res, next) => {
 
         })
 
+        //get specific email data load api
         app.get('/reviews', async (req, res) => {
           let query = {}
           if (req.query.email) {
@@ -106,7 +114,7 @@ const verifyJWT = (req, res, next) => {
           const reviewsByTime = reviews.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).reverse()
           res.send(reviewsByTime)
         })
-
+       //review delete api
         app.delete('/review/:id',verifyJWT, async (req, res) => {
           const id = req.params.id;
           const query = { _id: ObjectId(id) };
@@ -120,6 +128,8 @@ const verifyJWT = (req, res, next) => {
           const result = await reviewCollecttion.findOne(query)
           res.send(result)
         })
+
+        //review update  api
 
         app.patch('/updatereview/:id',verifyJWT, async (req, res) => {
           const id = req.params.id;
