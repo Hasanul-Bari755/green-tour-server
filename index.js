@@ -46,7 +46,7 @@ const verifyJWT = (req, res, next) => {
         app.get('/services', async (req, res) => {
           const query = {}
           const cursor = serviceCollection.find(query);
-          const services = await cursor.limit(3).toArray()
+          const services = await (await cursor.limit(3).toArray()).reverse()
           res.send(services)
         })
 
@@ -107,7 +107,7 @@ const verifyJWT = (req, res, next) => {
           res.send(reviewsByTime)
         })
 
-        app.delete('/review/:id', async (req, res) => {
+        app.delete('/review/:id',verifyJWT, async (req, res) => {
           const id = req.params.id;
           const query = { _id: ObjectId(id) };
           const result = await reviewCollecttion.deleteOne(query);
@@ -124,7 +124,7 @@ const verifyJWT = (req, res, next) => {
         app.patch('/updatereview/:id',verifyJWT, async (req, res) => {
           const id = req.params.id;
           const review = req.body;
-          console.log(review)
+       
           console.log(review.userName,review.img,review.review)
           const query = { _id: ObjectId(id) };
           const option = {upsert: true}
